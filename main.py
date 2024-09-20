@@ -1,8 +1,8 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QMainWindow
 from PyQt6.QtGui import QPixmap, QCursor
-from PyQt6.QtCore import Qt
-from pygame import mixer
+from PyQt6.QtCore import Qt, QUrl
+from PyQt6.QtMultimedia import QSoundEffect
 
 class BellMenu(QMainWindow):
     def __init__(self):
@@ -10,11 +10,8 @@ class BellMenu(QMainWindow):
         self.setWindowTitle("Table Call Bell")
         self.setMaximumSize(600, 600)
 
-        self.setCursor(QCursor(Qt.CursorShape.BlankCursor)) #invisible cursor, comment if you want to see him
-
-        mixer.init()
-
-        self.click_sound = mixer.Sound("bell.mp3")
+        # Hide the cursor; comment this line if you want to see the cursor
+        self.setCursor(QCursor(Qt.CursorShape.BlankCursor)) 
 
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
@@ -30,17 +27,24 @@ class BellMenu(QMainWindow):
 
         self.clicks = 0
 
+        # Initialize QSoundEffect for bell
+        self.bell_sound = QSoundEffect()
+        self.bell_sound.setSource(QUrl.fromLocalFile("bell.wav"))  # Use the converted .wav file
+        self.bell_sound.setVolume(0.5)  # Volume: 0.0 to 1.0
+
+        # Initialize QSoundEffect for moan
+        self.moan_sound = QSoundEffect()
+        self.moan_sound.setSource(QUrl.fromLocalFile("anime-moan.wav"))  # Use the converted .wav file
+        self.moan_sound.setVolume(0.5)  # Volume: 0.0 to 1.0
+
     def play_sound(self, event):
         self.clicks += 1
 
         if self.clicks > 100:
-            self.click_sound = mixer.Sound("anime-moan.mp3")
-            self.click_sound.play()
+            self.moan_sound.play()
             self.clicks = 0
-            self.click_sound = mixer.Sound("bell.mp3")
-
         else:
-            self.click_sound.play()
+            self.bell_sound.play()
 
         print(f"Clicks count {self.clicks}")
 
